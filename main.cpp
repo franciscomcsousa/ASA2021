@@ -7,6 +7,10 @@ using namespace std;
 
 vector<vector<int>> graph;
 
+vector<int> parents;
+
+int maxNumber = 1;
+
 void readGraph(){
     int n,m;
     scanf("%d %d", &n, &m);
@@ -20,6 +24,8 @@ void readGraph(){
 
 int minPieces(vector<vector<int>> graph){
     vector<int> v = vector<int>(graph.size());
+    parents = vector<int>();
+
     int counter = 0;
 
     for (int i = 1; i < graph.size(); i++)
@@ -34,6 +40,7 @@ int minPieces(vector<vector<int>> graph){
     {
         if(v[i]==0)
         {
+            parents.push_back(i);
             counter++;
             printf("%d\n", i);
         }
@@ -43,12 +50,38 @@ int minPieces(vector<vector<int>> graph){
 
 }
 
+void maxSequence(vector<vector<int>> graph, int parent, int counter){
+
+    int maxProgress = counter;
+    maxProgress++;
+
+    if(graph[parent].size() == 0){
+        if(maxProgress > maxNumber){
+            maxNumber = maxProgress;
+        }
+    }
+    else{
+        for(int i = 0; i < graph[parent].size(); i++){
+            maxSequence(graph, graph[parent][i], maxProgress);
+        }
+    }
+}
+
+void computeParents(){
+    for(int i = 0; i < parents.size(); i++){
+        maxSequence(graph, parents[i], 0);
+    }
+}
+
 int main(){
+
     readGraph();
 
     int min = minPieces(graph);
 
-    printf("%d\n", min);
+    computeParents();
+
+    printf("%d %d\n", min, maxNumber);
 
     return 0;
 }
