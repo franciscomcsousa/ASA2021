@@ -50,7 +50,7 @@ int minPieces(vector<vector<int>> graph){
 
 }
 
-void maxSequence(vector<vector<int>> graph, int parent, int counter){
+void maxSequence(int parent, int counter){
 
     int maxProgress = counter;
     maxProgress++;
@@ -62,7 +62,7 @@ void maxSequence(vector<vector<int>> graph, int parent, int counter){
     }
     else{
         for(int i = 0; i < graph[parent].size(); i++){
-            maxSequence(graph, graph[parent][i], maxProgress);
+            maxSequence(graph[parent][i], maxProgress);
         }
     }
 }
