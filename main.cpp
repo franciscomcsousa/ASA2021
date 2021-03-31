@@ -24,7 +24,7 @@ void readGraph(){
 
 int minPieces(vector<vector<int>> graph){
     vector<int> v = vector<int>(graph.size());
-    parents = vector<int>();
+    parents = vector<int>(graph.size());
 
     int counter = 0;
 
