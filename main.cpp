@@ -19,8 +19,6 @@ typedef struct nodestr{
 
 vector<vector<int>> graph;
 
-vector<Node> dfsGraph;
-
 vector<int> sources;
 
 int maxNumber = 1;
@@ -32,68 +30,74 @@ int readGraph()
 
     scanf("%d %d", &n, &m);
 
-    graph = vector<vector<int>>(n, vector<int>());
-    vector<int> isSource = vector<int>(n, 1);
+    graph = vector<vector<int>>(n + 1, vector<int>());
+    vector<int> isSource = vector<int>(n + 1, 1);
 
-    for(int i = 0; i < m; i++)
+    for(int i = 1; i < m + 1; i++)
     {
         int u, v;
         scanf("%d %d", &u, &v);
-        graph[u - 1].push_back(v);
-        isSource[v - 1] = 0;
+        graph[u].push_back(v);
+        isSource[v] = 0;
     }
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i < n + 1; i++)
     {
         if (isSource[i] == 1)
         {
-            sources.push_back(i + 1);
+            sources.push_back(i);
             counter++;
         }
     }
     return counter;
 }
 
-void DFSVisit(int i, int counter)
-{
-    dfsGraph[i].color = 'g';
+void dfs(int* distances, bool* visited, int i){
 
-    printf("counter: %d\n", counter);
+    if(visited[i]){return;}
+    visited[i] = true;
 
-    for (int j = 0; j < dfsGraph[i].adj.size(); j++)
+    for (int j = 0; j < (int) graph[i].size(); j++)
     {
-        Node node = dfsGraph[dfsGraph[i].adj[j] - 1];
-        if (node.color == 'w')
+        int zinho = graph[i][j];
+
+        if(!visited[zinho])
         {
-            node.pi = i + 1;
-            counter++;
-            DFSVisit(node.number, counter);
+            dfs(distances, visited, zinho);
         }
+
+        distances[i] = max(distances[i], distances[zinho] + 1);
     }
+
 }
 
-void DFS(int n)
-{
-    dfsGraph = vector<Node>(graph.size());
-    for (int i = 0; i < graph.size(); i++)
-    {
-        dfsGraph[i].color = 'w';
-        dfsGraph[i].pi = -1;
-        dfsGraph[i].adj = graph[i];
-        dfsGraph[i].number = i + 1;
-    }
-    
-    if(dfsGraph[n].color == 'w')
-    {
-        DFSVisit(n, 0);
-    }
-}
 
 int main()
 {
 
     int min = readGraph();
 
-    DFS(3);
+    int distances[graph.size()];
+    bool visited[graph.size()];
+
+    for (int i = 0; i < (int) graph.size(); i++)
+    {
+        distances[i] = 0; visited[i] = false;
+    }
+    
+
+    for (int i = 1; i < (int) graph.size(); i++)
+    {
+        if(!visited[i]){dfs(distances, visited, i);}
+    }
+
+    int maxValue = 0;
+
+    for (int i = 0; i < (int) graph.size(); i++)
+    {
+        maxValue = max(maxValue, distances[i]);
+    }
+    
+    printf("%d %d\n", min, maxValue + 1);
 
     return 0;
 }
