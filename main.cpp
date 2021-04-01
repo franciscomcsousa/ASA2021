@@ -5,26 +5,13 @@
 
 using namespace std;
 
-// In color
-// "b" stands for "black"
-// "g" stands for "grey"
-// "w" stands for "white"
-
-typedef struct nodestr{
-    vector<int> adj;
-    char color;
-    int pi;
-    int number;
-} Node;
 
 vector<vector<int>> graph;
 
-vector<int> sources;
-
 int maxNumber = 1;
 
-int readGraph()
-{
+
+int readGraph(){
     int n, m;
     int counter = 0;
 
@@ -44,7 +31,6 @@ int readGraph()
     {
         if (isSource[i] == 1)
         {
-            sources.push_back(i);
             counter++;
         }
     }
@@ -53,26 +39,32 @@ int readGraph()
 
 void dfs(int* distances, bool* visited, int i){
 
-    if(visited[i]){return;}
+    if(visited[i]){
+        return;
+    }
+
     visited[i] = true;
+
+    if(graph[i].size() == 0){
+        distances[i] = 1;
+    }
 
     for (int j = 0; j < (int) graph[i].size(); j++)
     {
-        int zinho = graph[i][j];
+        int child = graph[i][j];
 
-        if(!visited[zinho])
+        if(!visited[child])
         {
-            dfs(distances, visited, zinho);
+            dfs(distances, visited, child);
         }
 
-        distances[i] = max(distances[i], distances[zinho] + 1);
+        distances[i] = max(distances[i], distances[child] + 1);
     }
 
 }
 
 
-int main()
-{
+int main(){
 
     int min = readGraph();
 
@@ -87,7 +79,9 @@ int main()
 
     for (int i = 1; i < (int) graph.size(); i++)
     {
-        if(!visited[i]){dfs(distances, visited, i);}
+        if(!visited[i]){
+            dfs(distances, visited, i);
+        }
     }
 
     int maxValue = 0;
@@ -97,7 +91,7 @@ int main()
         maxValue = max(maxValue, distances[i]);
     }
     
-    printf("%d %d\n", min, maxValue + 1);
+    printf("%d %d\n", min, maxValue);
 
     return 0;
 }
