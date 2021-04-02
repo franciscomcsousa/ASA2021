@@ -37,7 +37,7 @@ int readGraph(){
     return counter;
 }
 
-void dfs(int* distances, bool* visited, int i){
+/*void dfs(int* distances, bool* visited, int i){
 
     if(visited[i]){
         return;
@@ -61,7 +61,39 @@ void dfs(int* distances, bool* visited, int i){
         distances[i] = max(distances[i], distances[child] + 1);
     }
 
+}*/
+
+void dfs(int* distances, bool* visited, int i){
+
+    vector<int> queue = vector<int>(graph.size());
+    queue.push_back(i);
+    
+    while (queue.size() != 0)
+    {
+        if (visited[queue.back()])
+        {
+            queue.pop_back();
+        }
+
+        visited[queue.back()] = true;
+
+        int vert = queue.back();
+
+        for (int j = 0; j < graph[vert].size(); j++)
+        {
+            int child = graph[vert][j];
+
+            if (!visited[child])
+            {
+                queue.push_back(child);
+                break;
+            }
+            distances[vert] = max(distances[vert], distances[child] + 1);
+        }
+        
+    }
 }
+
 
 
 int main(){
@@ -91,7 +123,7 @@ int main(){
         maxValue = max(maxValue, distances[i]);
     }
     
-    printf("%d %d\n", min, maxValue);
+    printf("%d %d\n", min, maxValue + 1);
 
     return 0;
 }
