@@ -73,6 +73,10 @@ void dfs(int* distances, bool* visited, int i){
         if (visited[queue.back()])
         {
             queue.pop_back();
+            if (queue.back() == -1)
+            {
+                break;
+            }
         }
 
         visited[queue.back()] = true;
