@@ -79,7 +79,7 @@ void dfs(int* distances, bool* visited, int i){
 
         int vert = queue.back();
 
-        for (int j = 0; j < graph[vert].size(); j++)
+        for (int j = 0; j < (int) graph[vert].size(); j++)
         {
             int child = graph[vert][j];
 
