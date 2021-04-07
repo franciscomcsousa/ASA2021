@@ -5,11 +5,7 @@
 
 using namespace std;
 
-
 vector<vector<int>> graph;
-
-int maxNumber = 1;
-
 
 int readGraph(){
     int n, m;
@@ -27,6 +23,7 @@ int readGraph(){
         graph[u].push_back(v);
         isSource[v] = 0;
     }
+    
     for (int i = 1; i < n + 1; i++)
     {
         if (isSource[i] == 1)
@@ -37,44 +34,17 @@ int readGraph(){
     return counter;
 }
 
-/*void dfs(int* distances, bool* visited, int i){
-
-    if(visited[i]){
-        return;
-    }
-
-    visited[i] = true;
-
-    if(graph[i].size() == 0){
-        distances[i] = 1;
-    }
-
-    for (int j = 0; j < (int) graph[i].size(); j++)
-    {
-        int child = graph[i][j];
-
-        if(!visited[child])
-        {
-            dfs(distances, visited, child);
-        }
-
-        distances[i] = max(distances[i], distances[child] + 1);
-    }
-
-}*/
-
 void dfs(int* distances, bool* visited, int i){
 
-    vector<int> queue = vector<int>(graph.size());
+    vector<int> queue = vector<int>(graph.size(), -1);
     queue.push_back(i);
     
-    while (queue.size() != 0)
+    while (!queue.empty())
     {
         if (visited[queue.back()])
         {
             queue.pop_back();
-            if (queue.back() == -1)
-            {
+            if(queue.back() == -1){
                 break;
             }
         }
@@ -94,18 +64,15 @@ void dfs(int* distances, bool* visited, int i){
             }
             distances[vert] = max(distances[vert], distances[child] + 1);
         }
-        
     }
 }
-
-
 
 int main(){
 
     int min = readGraph();
 
-    int distances[graph.size()];
-    bool visited[graph.size()];
+    int* distances = new int[graph.size() + 1];
+    bool* visited = new bool[graph.size() + 1];
 
     for (int i = 0; i < (int) graph.size(); i++)
     {
