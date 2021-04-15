@@ -38,7 +38,8 @@ void dfs(int* distances, bool* visited, int i){
 
     vector<int> queue = vector<int>(graph.size(), -1);
     queue.push_back(i);
-    
+    vector<int> lastChild = vector<int>(graph.size(), 0);
+
     while (!queue.empty())
     {
         if (visited[queue.back()])
@@ -53,13 +54,14 @@ void dfs(int* distances, bool* visited, int i){
 
         int vert = queue.back();
 
-        for (int j = 0; j < (int) graph[vert].size(); j++)
+        for (int j = lastChild[vert]; j < (int) graph[vert].size(); j++)
         {
             int child = graph[vert][j];
 
             if (!visited[child])
             {
                 queue.push_back(child);
+                lastChild[vert] = j;
                 break;
             }
             distances[vert] = max(distances[vert], distances[child] + 1);
