@@ -43,7 +43,7 @@ void buildGraph()
         graph[0].push_back(edgeX);
 
 
-        edgeY.vertex = i;
+        edgeY.vertex = 1;
         edgeY.capacity = yBuffer;
         graph.back().push_back(edgeY);
     }
@@ -57,7 +57,7 @@ void buildGraph()
         edgeA.capacity = capacity;
         graph[processA + 1].push_back(edgeA);
 
-        edgeB.vertex = 1;
+        edgeB.vertex =  processA + 1;
         edgeB.capacity = capacity;
         graph[processB + 1].push_back(edgeB);
     }
