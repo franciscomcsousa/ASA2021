@@ -71,7 +71,11 @@ int main()
     {
         for (int j = 0; j < graph[i].size(); j++)
         {
-            printf("%d connects to %d with a capacity of %d\n", i, graph[i][j].vertex, graph[i][j].capacity);
+            char strint[10];
+            char buffer[10];
+            sprintf(strint, "%d", i - 1);
+            strcpy(buffer, (i == 0) ? "X" : (i == 1) ? "Y" : strint);
+            printf("%s connects to %d with a capacity of %d\n", buffer , graph[i][j].vertex, graph[i][j].capacity);
         }
     } 
 
