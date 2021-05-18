@@ -42,9 +42,10 @@ void buildGraph()
         edgeX.capacity = xBuffer;
         graph[0].push_back(edgeX);
 
+
         edgeY.vertex = i;
         edgeY.capacity = yBuffer;
-        graph[1].push_back(edgeY);
+        graph.back().push_back(edgeY);
     }
 
     for (int i = 2; i < k + 2; i++)
@@ -56,7 +57,7 @@ void buildGraph()
         edgeA.capacity = capacity;
         graph[processA + 1].push_back(edgeA);
 
-        edgeB.vertex =  processA + 1;
+        edgeB.vertex = 1;
         edgeB.capacity = capacity;
         graph[processB + 1].push_back(edgeB);
     }
@@ -73,9 +74,12 @@ int main()
         {
             char strint[10];
             char buffer[10];
+            char buff[10];
             sprintf(strint, "%d", i - 1);
             strcpy(buffer, (i == 0) ? "X" : (i == 1) ? "Y" : strint);
-            printf("%s connects to %d with a capacity of %d\n", buffer , graph[i][j].vertex - 1, graph[i][j].capacity);
+            sprintf(strint, "%d", graph[i][j].vertex - 1);
+            strcpy(buff, (graph[i][j].vertex == 0) ? "X" : (graph[i][j].vertex == 1) ? "Y" : strint);
+            printf("%s connects to %s with a capacity of %d\n", buffer , buff, graph[i][j].capacity);
         }
     } 
 
