@@ -18,11 +18,11 @@ typedef struct edgeStruct{
 } Edge;
 
 //Prints the graph
-void graphPrinter(vector<vector<Edge>> graph)
+/*void graphPrinter(vector<vector<Edge>> graph)
 {
     for (int i = 0; i < 6; i++)
     {
-        for (int j = 0; j < graph[i].size(); j++)
+        for (long unsigned int j = 0; j < graph[i].size(); j++)
         {
             char strint[10];
             char first[10];
@@ -34,7 +34,7 @@ void graphPrinter(vector<vector<Edge>> graph)
             printf("%s connects to %s with a capacity of %d\n", first , last, graph[i][j].capacity);
         }
     }
-}
+}*/
 
 //buildGraph will fill nVertices with the graphs number of vertices
 vector<vector<Edge>> buildGraph(int* nVertices)
@@ -116,7 +116,7 @@ bool bfs(vector<vector<Edge>> graph, int* path, int nVertices)
         int parent = q.front();
         q.pop();
         //printf("PARENT: %d\n", parent);
-        for (int i = 0; i < graph[parent].size(); i++)
+        for (long unsigned int i = 0; i < graph[parent].size(); i++)
         {
             son = graph[parent][i].vertex;
             if (!visited[son] && graph[parent][i].capacity > 0)
@@ -146,7 +146,7 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
     for (int i = 0; i < nVertices; i++)
     {
         newGraph.push_back(vector<Edge>());
-        for (int j = 0; j < graph[i].size(); j++)
+        for (long unsigned int j = 0; j < graph[i].size(); j++)
         {
             Edge edge;
             edge.vertex = graph[i][j].vertex;
@@ -158,9 +158,8 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
     //Getting filled by BFS
     int path[nVertices];
     int maxFlow = 0;
-    int uIndex;
-    int iIndex;
-
+    int uIndex = 0;
+    int iIndex = 0;
 
     while (bfs(newGraph, path, nVertices))
     {
@@ -168,7 +167,7 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
         for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
             u = path[i];
-            for (int j = 0; j < newGraph[u].size(); j++)
+            for (long unsigned int j = 0; j < newGraph[u].size(); j++)
             {
                 if (graph[u][j].vertex == i)
                 {
@@ -182,14 +181,14 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
         for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
             u = path[i];
-            for (int j = 0; j < newGraph[u].size(); j++)
+            for (long unsigned int j = 0; j < newGraph[u].size(); j++)
             {
                 if (graph[u][j].vertex == i)
                 {
                     uIndex = j;
                 }
             }
-            for (int j = 0; j < newGraph[i].size(); j++)
+            for (long unsigned int j = 0; j < newGraph[i].size(); j++)
             {
                 if (graph[i][j].vertex == u)
                 {
