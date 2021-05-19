@@ -55,6 +55,7 @@ vector<vector<Edge>> buildGraph(int* nVertices)
     for (int i = 2; i < n + 2; i++)
     {
         Edge edgeX, edgeY;
+        Edge edgeXT, edgeYT;
         scanf("%d %d", &xBuffer, &yBuffer);
 
         graph.push_back(vector<Edge>());
@@ -68,6 +69,16 @@ vector<vector<Edge>> buildGraph(int* nVertices)
         edgeY.vertex = VERTIX_Y;
         edgeY.capacity = yBuffer;
         graph.back().push_back(edgeY);
+
+        //Processes connect to X
+        edgeXT.vertex = VERTIX_X;
+        edgeXT.capacity = 0;
+        graph.back().push_back(edgeXT);
+
+        //Y connects to processes
+        edgeYT.vertex = i;
+        edgeYT.capacity = 0;
+        graph[VERTIX_Y].push_back(edgeYT);
     }
 
     for (int i = 2; i < k + 2; i++)
@@ -128,8 +139,6 @@ bool bfs(vector<vector<Edge>> graph, int* path, int nVertices)
 
 int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
 {
-    printf("hello");
-
     vector<vector<Edge>> newGraph = vector<vector<Edge>>();
 
     int u;
@@ -149,33 +158,70 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
     //Getting filled by BFS
     int path[nVertices];
     int maxFlow = 0;
+    int uIndex;
+    int iIndex;
+
 
     while (bfs(newGraph, path, nVertices))
     {
         int pathFlow = INT_MAX;
-        for (int i = VERTIX_Y; i != VERTIX_X; i++)
+        for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
             u = path[i];
-            pathFlow = min(pathFlow, newGraph[u][i].capacity);
+            for (int j = 0; j < newGraph[u].size(); j++)
+            {
+                if (graph[u][j].vertex == i)
+                {
+                    uIndex = j;
+                }
+            }
+            
+            pathFlow = min(pathFlow, newGraph[u][uIndex].capacity);
         }
         
-        for (int i = VERTIX_Y; i != VERTIX_X; i++)
+        for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
             u = path[i];
+            for (int j = 0; j < newGraph[u].size(); j++)
+            {
+                if (graph[u][j].vertex == i)
+                {
+                    uIndex = j;
+                }
+            }
+            for (int j = 0; j < newGraph[i].size(); j++)
+            {
+                if (graph[i][j].vertex == u)
+                {
+                    iIndex = j;
+                }
+            }
+            
             if (i == VERTIX_X || i == VERTIX_Y || u == VERTIX_X || u == VERTIX_Y)
             {
-                newGraph[u][i].capacity -= pathFlow;
-                newGraph[u][i].capacity += pathFlow;
-                printf("case1\n");
+                newGraph[u][uIndex].capacity -= pathFlow;
+                newGraph[i][iIndex].capacity += pathFlow;
+                //printf("CASE 1:\n");
+                //printf("Capacity from %d to %d is now %d\n", u, i, newGraph[u][uIndex].capacity);
+                //printf("Capacity from %d to %d is now %d\n", i, u, newGraph[i][iIndex].capacity);
+                //printf("Pathflow is %d\n", pathFlow);
+                //printf("Maxflow is %d\n", maxFlow);
+                //printf("----------------------------------------------\n");
+
             }
             else
             {
-                newGraph[u][i].capacity -= pathFlow;
-                newGraph[u][i].capacity -= pathFlow;
-                printf("case2\n");
+                newGraph[u][uIndex].capacity -= pathFlow;
+                newGraph[i][iIndex].capacity -= pathFlow;
+                //printf("CASE 2:\n");
+                //printf("Capacity from %d to %d is now %d\n", u, i, newGraph[u][uIndex].capacity);
+                //printf("Capacity from %d to %d is now %d\n", i, u, newGraph[i][iIndex].capacity);
+                //printf("Pathflow is %d\n", pathFlow);
+                //printf("Maxflow is %d\n", maxFlow);
+                //printf("----------------------------------------------\n");
             }
-            maxFlow += pathFlow;
         }
+        maxFlow += pathFlow;
     }
     return maxFlow;
 }
@@ -186,7 +232,7 @@ int main()
 
     vector<vector<Edge>> graph = buildGraph(&nVertices);
 
-    graphPrinter(graph);
+    //graphPrinter(graph);
 
     printf("%d\n", fordFulkerson(graph, nVertices));
 
