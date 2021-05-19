@@ -12,10 +12,14 @@
 
 using namespace std;
 
+
 typedef struct edgeStruct{
     int vertex;
     int capacity;
 } Edge;
+
+vector<vector<Edge>> graph;
+
 
 //Prints the graph
 /*void graphPrinter(vector<vector<Edge>> graph)
@@ -100,7 +104,7 @@ vector<vector<Edge>> buildGraph(int* nVertices)
     return graph;
 }
 
-bool bfs(vector<vector<Edge>> graph, int* path, int nVertices)
+bool bfs(int* path, int nVertices)
 {
     bool visited[nVertices];
     memset(visited, false, sizeof(visited));
@@ -137,15 +141,13 @@ bool bfs(vector<vector<Edge>> graph, int* path, int nVertices)
     return false;
 }
 
-int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
+int fordFulkerson(int nVertices)
 {
-    vector<vector<Edge>> newGraph = vector<vector<Edge>>();
-
     int u;
 
-    for (int i = 0; i < nVertices; i++)
+    /*for (int i = 0; i < nVertices; i++)
     {
-        newGraph.push_back(vector<Edge>());
+        graph.push_back(vector<Edge>());
         for (long unsigned int j = 0; j < graph[i].size(); j++)
         {
             Edge edge;
@@ -153,7 +155,7 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
             edge.capacity = graph[i][j].capacity;
             newGraph[i].push_back(edge);
         }   
-    }
+    }*/
 
     //Getting filled by BFS
     int path[nVertices];
@@ -161,13 +163,13 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
     int uIndex = 0;
     int iIndex = 0;
 
-    while (bfs(newGraph, path, nVertices))
+    while (bfs(path, nVertices))
     {
         int pathFlow = INT_MAX;
         for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
             u = path[i];
-            for (long unsigned int j = 0; j < newGraph[u].size(); j++)
+            for (long unsigned int j = 0; j < graph[u].size(); j++)
             {
                 if (graph[u][j].vertex == i)
                 {
@@ -175,14 +177,13 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
                     break;
                 }
             }
-            
-            pathFlow = min(pathFlow, newGraph[u][uIndex].capacity);
+            pathFlow = min(pathFlow, graph[u][uIndex].capacity);
         }
         
         for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
             u = path[i];
-            for (long unsigned int j = 0; j < newGraph[u].size(); j++)
+            for (long unsigned int j = 0; j < graph[u].size(); j++)
             {
                 if (graph[u][j].vertex == i)
                 {
@@ -190,7 +191,7 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
                     break;
                 }
             }
-            for (long unsigned int j = 0; j < newGraph[i].size(); j++)
+            for (long unsigned int j = 0; j < graph[i].size(); j++)
             {
                 if (graph[i][j].vertex == u)
                 {
@@ -201,8 +202,8 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
             
             if (i == VERTIX_X || i == VERTIX_Y || u == VERTIX_X || u == VERTIX_Y)
             {
-                newGraph[u][uIndex].capacity -= pathFlow;
-                newGraph[i][iIndex].capacity += pathFlow;
+                graph[u][uIndex].capacity -= pathFlow;
+                graph[i][iIndex].capacity += pathFlow;
                 //printf("CASE 1:\n");
                 //printf("Capacity from %d to %d is now %d\n", u, i, newGraph[u][uIndex].capacity);
                 //printf("Capacity from %d to %d is now %d\n", i, u, newGraph[i][iIndex].capacity);
@@ -213,8 +214,8 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
             }
             else
             {
-                newGraph[u][uIndex].capacity -= pathFlow;
-                newGraph[i][iIndex].capacity -= pathFlow;
+                graph[u][uIndex].capacity -= pathFlow;
+                graph[i][iIndex].capacity -= pathFlow;
                 //printf("CASE 2:\n");
                 //printf("Capacity from %d to %d is now %d\n", u, i, newGraph[u][uIndex].capacity);
                 //printf("Capacity from %d to %d is now %d\n", i, u, newGraph[i][iIndex].capacity);
@@ -232,11 +233,11 @@ int main()
 {
     int nVertices;
 
-    vector<vector<Edge>> graph = buildGraph(&nVertices);
+    graph = buildGraph(&nVertices);
 
     //graphPrinter(graph);
 
-    printf("%d\n", fordFulkerson(graph, nVertices));
+    printf("%d\n", fordFulkerson(nVertices));
 
     return 0;
 }
