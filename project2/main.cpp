@@ -172,6 +172,7 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
                 if (graph[u][j].vertex == i)
                 {
                     uIndex = j;
+                    break;
                 }
             }
             
@@ -186,6 +187,7 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
                 if (graph[u][j].vertex == i)
                 {
                     uIndex = j;
+                    break;
                 }
             }
             for (long unsigned int j = 0; j < newGraph[i].size(); j++)
@@ -193,6 +195,7 @@ int fordFulkerson(vector<vector<Edge>> graph, int nVertices)
                 if (graph[i][j].vertex == u)
                 {
                     iIndex = j;
+                    break;
                 }
             }
             
