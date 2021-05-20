@@ -8,7 +8,6 @@
 
 #define VERTIX_X 0
 #define VERTIX_Y 1
-#define INT_MAX 2147483647
 
 using namespace std;
 
@@ -19,26 +18,6 @@ typedef struct edgeStruct{
 } Edge;
 
 vector<vector<Edge>> graph;
-
-
-//Prints the graph
-/*void graphPrinter(vector<vector<Edge>> graph)
-{
-    for (int i = 0; i < 6; i++)
-    {
-        for (long unsigned int j = 0; j < graph[i].size(); j++)
-        {
-            char strint[10];
-            char first[10];
-            char last[10];
-            sprintf(strint, "%d", i - 1);
-            strcpy(first, (i == 0) ? "X" : (i == 1) ? "Y" : strint);
-            sprintf(strint, "%d", graph[i][j].vertex - 1);
-            strcpy(last, (graph[i][j].vertex == 0) ? "X" : (graph[i][j].vertex == 1) ? "Y" : strint);
-            printf("%s connects to %s with a capacity of %d\n", first , last, graph[i][j].capacity);
-        }
-    }
-}*/
 
 //buildGraph will fill nVertices with the graphs number of vertices
 vector<vector<Edge>> buildGraph(int* nVertices)
@@ -74,12 +53,12 @@ vector<vector<Edge>> buildGraph(int* nVertices)
         edgeY.capacity = yBuffer;
         graph.back().push_back(edgeY);
 
-        //Processes connect to X
+        //Processes connect to X (residual)
         edgeXT.vertex = VERTIX_X;
         edgeXT.capacity = 0;
         graph.back().push_back(edgeXT);
 
-        //Y connects to processes
+        //Y connects to processes (residual)
         edgeYT.vertex = i;
         edgeYT.capacity = 0;
         graph[VERTIX_Y].push_back(edgeYT);
@@ -107,19 +86,18 @@ vector<vector<Edge>> buildGraph(int* nVertices)
 bool bfs(int* path, int nVertices)
 {
     bool visited[nVertices];
+    queue<int> queue;
     memset(visited, false, sizeof(visited));
 
-    queue<int> q;
-    q.push(VERTIX_X);
+    queue.push(VERTIX_X);
+    path[VERTIX_X] = 0; //VERTIX_X is the source, so it has no path parent
     visited[VERTIX_X] = true;
-    path[VERTIX_X] = -1;
 
-    while (!q.empty())
+    while (!queue.empty())
     {
         int son;
-        int parent = q.front();
-        q.pop();
-        //printf("PARENT: %d\n", parent);
+        int parent = queue.front();
+        queue.pop();
         for (long unsigned int i = 0; i < graph[parent].size(); i++)
         {
             son = graph[parent][i].vertex;
@@ -128,11 +106,9 @@ bool bfs(int* path, int nVertices)
                 if (son == VERTIX_Y)
                 {
                     path[son] = parent;
-                    //printf("SON: %d\nFINISHED!\n", son);
                     return true;
                 }
-                q.push(son);
-                //printf("SON: %d\n", son);
+                queue.push(son);
                 path[son] = parent;
                 visited[son] = true;
             }
@@ -143,19 +119,7 @@ bool bfs(int* path, int nVertices)
 
 int fordFulkerson(int nVertices)
 {
-    int u;
-
-    /*for (int i = 0; i < nVertices; i++)
-    {
-        graph.push_back(vector<Edge>());
-        for (long unsigned int j = 0; j < graph[i].size(); j++)
-        {
-            Edge edge;
-            edge.vertex = graph[i][j].vertex;
-            edge.capacity = graph[i][j].capacity;
-            newGraph[i].push_back(edge);
-        }   
-    }*/
+    int v;
 
     //Getting filled by BFS
     int path[nVertices];
@@ -165,27 +129,27 @@ int fordFulkerson(int nVertices)
 
     while (bfs(path, nVertices))
     {
-        int pathFlow = INT_MAX;
+        int currentFlow = __INT_MAX__;
         for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
-            u = path[i];
-            for (long unsigned int j = 0; j < graph[u].size(); j++)
+            v = path[i];
+            for (long unsigned int j = 0; j < graph[v].size(); j++)
             {
-                if (graph[u][j].vertex == i)
+                if (graph[v][j].vertex == i)
                 {
                     uIndex = j;
                     break;
                 }
             }
-            pathFlow = min(pathFlow, graph[u][uIndex].capacity);
+            currentFlow = min(graph[v][uIndex].capacity, currentFlow);
         }
         
         for (int i = VERTIX_Y; i != VERTIX_X; i = path[i])
         {
-            u = path[i];
-            for (long unsigned int j = 0; j < graph[u].size(); j++)
+            v = path[i];
+            for (long unsigned int j = 0; j < graph[v].size(); j++)
             {
-                if (graph[u][j].vertex == i)
+                if (graph[v][j].vertex == i)
                 {
                     uIndex = j;
                     break;
@@ -193,38 +157,27 @@ int fordFulkerson(int nVertices)
             }
             for (long unsigned int j = 0; j < graph[i].size(); j++)
             {
-                if (graph[i][j].vertex == u)
+                if (graph[i][j].vertex == v)
                 {
                     iIndex = j;
                     break;
                 }
             }
             
-            if (i == VERTIX_X || i == VERTIX_Y || u == VERTIX_X || u == VERTIX_Y)
+            //If its a path envolving X or Y, behave normally
+            if (i == VERTIX_X || i == VERTIX_Y || v == VERTIX_X || v == VERTIX_Y)
             {
-                graph[u][uIndex].capacity -= pathFlow;
-                graph[i][iIndex].capacity += pathFlow;
-                //printf("CASE 1:\n");
-                //printf("Capacity from %d to %d is now %d\n", u, i, newGraph[u][uIndex].capacity);
-                //printf("Capacity from %d to %d is now %d\n", i, u, newGraph[i][iIndex].capacity);
-                //printf("Pathflow is %d\n", pathFlow);
-                //printf("Maxflow is %d\n", maxFlow);
-                //printf("----------------------------------------------\n");
-
+                graph[i][iIndex].capacity += currentFlow;
+                graph[v][uIndex].capacity -= currentFlow;
             }
+            //If its a path between processes, its residual edge will be affected in the same manner as its normal edge (instead of simetrical)
             else
             {
-                graph[u][uIndex].capacity -= pathFlow;
-                graph[i][iIndex].capacity -= pathFlow;
-                //printf("CASE 2:\n");
-                //printf("Capacity from %d to %d is now %d\n", u, i, newGraph[u][uIndex].capacity);
-                //printf("Capacity from %d to %d is now %d\n", i, u, newGraph[i][iIndex].capacity);
-                //printf("Pathflow is %d\n", pathFlow);
-                //printf("Maxflow is %d\n", maxFlow);
-                //printf("----------------------------------------------\n");
+                graph[i][iIndex].capacity -= currentFlow;
+                graph[v][uIndex].capacity -= currentFlow;
             }
         }
-        maxFlow += pathFlow;
+        maxFlow += currentFlow;
     }
     return maxFlow;
 }
@@ -233,9 +186,8 @@ int main()
 {
     int nVertices;
 
+    //nVertices will be filled by buildGraph
     graph = buildGraph(&nVertices);
-
-    //graphPrinter(graph);
 
     printf("%d\n", fordFulkerson(nVertices));
 
